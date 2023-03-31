@@ -13,4 +13,6 @@
     </padding>
 
     <GridPane fx:id="grid"/>
+    <Label fx:id="text"/>
+    <Label fx:id="realText"/>
 </VBox>
