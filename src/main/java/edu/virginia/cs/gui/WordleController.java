@@ -32,7 +32,7 @@ public class WordleController {
 
     public void initialize() {
         createGrid();
-        setEvenHandler();
+        setEventHandler();
     }
 
     private void createGrid() {
@@ -59,7 +59,7 @@ public class WordleController {
         }
     }
 
-    private void setEvenHandler(){
+    private void setEventHandler(){
         grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
