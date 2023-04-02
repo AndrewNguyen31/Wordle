@@ -47,6 +47,11 @@ public class WordleController {
                     change.setText(change.getText().toUpperCase());
                     return change;
                 }));
+                text.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue.length() > 1){
+                        text.setText(String.valueOf(newValue.charAt(0)));
+                    }
+                });
                 text.setEditable(false);
                 if (row == 0 && col == 0) {
                     text.setEditable(true);
@@ -84,6 +89,8 @@ public class WordleController {
                 requestFocus(newField);
             }
         });
+
+
     }
 
     private String getWord(int row) {
@@ -151,8 +158,5 @@ public class WordleController {
             Insets insets = new Insets(0,2.5,2.5,2.5);
             grid.setMargin(text,insets);
         }
-
     }
-
-
 }
