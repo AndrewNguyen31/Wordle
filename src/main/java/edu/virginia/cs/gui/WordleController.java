@@ -23,6 +23,8 @@ public class WordleController {
     private Wordle wordle = new WordleImplementation();
     int row = 0;
     int col = 0;
+
+    LetterResult[] letterColors;
     @FXML
     private GridPane grid = new GridPane();
     @FXML
@@ -96,7 +98,7 @@ public class WordleController {
 
     private boolean checkValidWord(String word) {
         try {
-            wordle.submitGuess(word);
+            letterColors = wordle.submitGuess(word);
             return true;
         }
         catch (IllegalWordException e) {
@@ -132,8 +134,7 @@ public class WordleController {
         if (col > 0) col--;
     }
 
-    private void colorRow(String guess) {
-        LetterResult[] letterColors = wordle.submitGuess(guess);
+    private void colorRow(String guess) {;
         for (int col = 0; col < 5; col++) {
             TextField text = new TextField();
             text.setText(String.valueOf(guess.charAt(col)));
@@ -151,7 +152,6 @@ public class WordleController {
             Insets insets = new Insets(0,2.5,2.5,2.5);
             grid.setMargin(text,insets);
         }
-
     }
 
 
