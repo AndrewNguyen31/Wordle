@@ -70,7 +70,11 @@ public class WordleController {
         grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(wordle.isGameOver()){return;}
+                if(wordle.isGameOver()) return;
+                else if (!isValidCharacter(event)){
+                    event.consume();
+                    return;
+                }
                 text.setText("");
                 KeyCode code = event.getCode();
                 TextField oldField = getTextField(col, row);
@@ -96,6 +100,23 @@ public class WordleController {
         });
 
 
+    }
+
+    private boolean isValidCharacter(KeyEvent keyEvent){
+        KeyCode code = keyEvent.getCode();
+        switch(code) {
+            case LEFT:
+            case RIGHT:
+            case UP:
+            case DOWN:
+            case PAGE_UP:
+            case PAGE_DOWN:
+            case HOME:
+            case END:
+            case TAB:
+                return false;
+        }
+        return Character.isLetter(keyEvent.getCharacter().charAt(0));
     }
 
     private String getWord(int row) {
