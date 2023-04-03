@@ -65,6 +65,7 @@ public class WordleController {
         grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+                if(wordle.isGameOver()){return;}
                 text.setText("");
                 KeyCode code = event.getCode();
                 TextField oldField = getTextField(col, row);
@@ -81,9 +82,11 @@ public class WordleController {
                         moveForward();
                     }
                 }
-                TextField newField = getTextField(col, row);
-                newField.setEditable(true);
-                requestFocus(newField);
+                if(!wordle.isGameOver()){
+                    TextField newField = getTextField(col, row);
+                    newField.setEditable(true);
+                    requestFocus(newField);
+                }
             }
         });
     }
@@ -134,7 +137,8 @@ public class WordleController {
         if (col > 0) col--;
     }
 
-    private void colorRow(String guess) {;
+    private void colorRow(String guess) {
+        if(isWin(guess)){return;}
         for (int col = 0; col < 5; col++) {
             TextField text = new TextField();
             text.setText(String.valueOf(guess.charAt(col)));
@@ -154,5 +158,34 @@ public class WordleController {
         }
     }
 
+    private boolean isWin(String word) {
+        if(word.equals(wordle.getAnswer())){
+            text.setText("Correct! You won!");
+            for (int col = 0; col < 5; col++) {
+                TextField text = new TextField();
+                text.setText(String.valueOf(word.charAt(col)));
+                text.setStyle("-fx-background-color: green; -fx-border-color: grey;-fx-text-fill:white;");
+                text.setPrefWidth(50);
+                text.setPrefHeight(400);
+                text.setFont(Font.font("verdana", FontWeight.BOLD, 20 ));
+                text.setTextFormatter(new TextFormatter<>((change) -> {
+                    change.setText(change.getText().toUpperCase());
+                    return change;
+                }));
+                grid.add(text, col, row);
+                Insets insets = new Insets(0,2.5,2.5,2.5);
+                grid.setMargin(text,insets);
+            }
+
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 5; col++) {
+                    TextField curField = getTextField(col, row);
+                    curField.setEditable(false);
+                }
+            }
+            return true;
+        }
+        else {return false;}
+    }
 
 }
