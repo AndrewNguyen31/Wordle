@@ -49,6 +49,11 @@ public class WordleController {
                     change.setText(change.getText().toUpperCase());
                     return change;
                 }));
+                text.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue.length() > 1){
+                        text.setText(String.valueOf(newValue.charAt(0)));
+                    }
+                });
                 text.setEditable(false);
                 if (row == 0 && col == 0) {
                     text.setEditable(true);
@@ -89,6 +94,8 @@ public class WordleController {
                 }
             }
         });
+
+
     }
 
     private String getWord(int row) {
@@ -157,7 +164,6 @@ public class WordleController {
             grid.setMargin(text,insets);
         }
     }
-
     private boolean isWin(String word) {
         if(word.equals(wordle.getAnswer())){
             text.setText("Correct! You won!");
@@ -187,5 +193,4 @@ public class WordleController {
         }
         else {return false;}
     }
-
 }
