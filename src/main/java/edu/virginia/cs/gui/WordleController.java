@@ -162,6 +162,17 @@ public class WordleController {
             Insets insets = new Insets(0,2.5,2.5,2.5);
             grid.setMargin(text,insets);
         }
+        if (wordle.isWin() || wordle.isLoss()) makeEverythingUneditable();
         if (wordle.isWin()) text.setText("Correct! You won!");
+        else if (wordle.isLoss()) text.setText("Incorrect. You are now out of guesses.");
+    }
+
+    private void makeEverythingUneditable(){
+        for (int row = 0; row < 6; row++){
+            for (int col = 0; col < 5; col++){
+                TextField curField = getTextField(col, row);
+                curField.setEditable(false);
+            }
+        }
     }
 }
