@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -67,42 +68,42 @@ public class WordleController {
     }
 
     private void setEventHandler(){
+
+        grid.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                grid.setOnMouseClicked(null);
+            }
+        });
+
         grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if(wordle.isGameOver()) return;
-                else if (!isValidCharacter(event)){
+                else if (isCursor(event)){
                     event.consume();
                     return;
                 }
-                text.setText("");
-                KeyCode code = event.getCode();
-                TextField oldField = getTextField(col, row);
-                oldField.setEditable(false);
                 String word = getWord(row);
                 if (checkValidWord(word)) {
                     colorRow(word);
+                    makeRowUneditable(row);
                     moveForward();
                 }
                 else {
-                    if (code == KeyCode.BACK_SPACE) {
-                        moveBackward();
-                    } else if (col < 4) {
-                        moveForward();
-                    }
+                    if (event.getCode() == KeyCode.BACK_SPACE) moveBackward();
+                    else if (col < 4) moveForward();
                 }
-                if(!wordle.isGameOver()){
-                    TextField newField = getTextField(col, row);
-                    newField.setEditable(true);
-                    requestFocus(newField);
-                }
+                TextField newField = getTextField(col, row);
+                newField.setEditable(true);
+                requestFocus(newField);
             }
         });
 
 
     }
 
-    private boolean isValidCharacter(KeyEvent keyEvent){
+    private boolean isCursor(KeyEvent keyEvent){
         KeyCode code = keyEvent.getCode();
         switch(code) {
             case LEFT:
@@ -114,9 +115,9 @@ public class WordleController {
             case HOME:
             case END:
             case TAB:
-                return false;
+                return true;
         }
-        return Character.isLetter(keyEvent.getCharacter().charAt(0));
+        return false;
     }
 
     private String getWord(int row) {
@@ -144,7 +145,6 @@ public class WordleController {
         Platform.runLater(() -> {
             if (!textField.isFocused()) {
                 textField.requestFocus();
-                requestFocus(textField);
             }
         });
     }
@@ -156,9 +156,7 @@ public class WordleController {
 
     private void moveForward() {
         col = (col+1) % 5;
-        if (col == 0) {
-            row = row + 1;
-        }
+        if (col == 0) row++;
     }
 
     private void moveBackward() {
@@ -183,17 +181,14 @@ public class WordleController {
             Insets insets = new Insets(0,2.5,2.5,2.5);
             grid.setMargin(text,insets);
         }
-        if (wordle.isWin() || wordle.isLoss()) makeEverythingUneditable();
         if (wordle.isWin()) text.setText("Correct! You won!");
         else if (wordle.isLoss()) text.setText("Incorrect. You are now out of guesses.");
     }
 
-    private void makeEverythingUneditable(){
-        for (int row = 0; row < 6; row++){
-            for (int col = 0; col < 5; col++){
-                TextField curField = getTextField(col, row);
-                curField.setEditable(false);
-            }
+    private void makeRowUneditable(int r){
+        for (int col = 0; col < 5; col++){
+            TextField curField = getTextField(col, r);
+            curField.setEditable(false);
         }
     }
 }
