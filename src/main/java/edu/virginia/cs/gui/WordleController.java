@@ -211,9 +211,22 @@ public class WordleController {
         Optional<ButtonType> YesNo = alert.showAndWait();
         if (YesNo.get() == ButtonType.YES){
             wordle = new WordleImplementation();
+            row = 0;
+            col = 0;
             initialize();
+            resetGrid();
         } else {
             Platform.exit();
+        }
+    }
+
+    private void resetGrid() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 5; col++) {
+                TextField text = getTextField(col, row);
+                text.setText("");
+                text.setEditable(false);
+            }
         }
     }
 }
