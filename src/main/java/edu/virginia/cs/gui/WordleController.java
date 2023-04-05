@@ -10,15 +10,16 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+import java.util.Optional;
 
 public class WordleController {
     private Wordle wordle = new WordleImplementation();
@@ -86,7 +87,7 @@ public class WordleController {
                 }
                 String word = getWord(row);
                 if (checkValidWord(word)) {
-                    colorRow(word);
+                    if(colorRow(word)) return;
                     makeRowUneditable(row);
                     moveForward();
                 }
@@ -163,7 +164,7 @@ public class WordleController {
         if (col > 0) col--;
     }
 
-    private void colorRow(String guess) {
+    private Boolean colorRow(String guess) {
         for (int col = 0; col < 5; col++) {
             TextField text = new TextField();
             text.setText(String.valueOf(guess.charAt(col)));
@@ -181,14 +182,38 @@ public class WordleController {
             Insets insets = new Insets(0,2.5,2.5,2.5);
             grid.setMargin(text,insets);
         }
-        if (wordle.isWin()) text.setText("Correct! You won!");
-        else if (wordle.isLoss()) text.setText("Incorrect. You are now out of guesses.");
+        if (wordle.isWin()) {
+            text.setText("Correct! You won!");
+            playAgainAlert();
+            return true;
+        }
+        else if (wordle.isLoss()) {
+            text.setText("Incorrect. You are now out of guesses.");
+            playAgainAlert();
+            return true;
+        }
+        return false;
     }
 
     private void makeRowUneditable(int r){
         for (int col = 0; col < 5; col++){
             TextField curField = getTextField(col, r);
             curField.setEditable(false);
+        }
+    }
+
+    private void playAgainAlert(){
+
+        Alert alert = new Alert(Alert.AlertType.NONE,
+                "Play again?",
+                ButtonType.YES, ButtonType.NO);
+
+        Optional<ButtonType> YesNo = alert.showAndWait();
+        if (YesNo.get() == ButtonType.YES){
+            wordle = new WordleImplementation();
+            initialize();
+        } else {
+            Platform.exit();
         }
     }
 }
