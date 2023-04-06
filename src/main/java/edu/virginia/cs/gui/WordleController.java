@@ -166,21 +166,11 @@ public class WordleController {
 
     private Boolean colorRow(String guess) {
         for (int col = 0; col < 5; col++) {
-            TextField text = new TextField();
+            TextField text = getTextField(col, row);
             text.setText(String.valueOf(guess.charAt(col)));
             if(letterColors[col].equals(LetterResult.GRAY)) {text.setStyle("-fx-background-color: dimgray; -fx-border-color: grey;-fx-text-fill:white;");}
             if(letterColors[col].equals(LetterResult.GREEN)) {text.setStyle("-fx-background-color: green; -fx-border-color: grey;-fx-text-fill:white;");}
             if(letterColors[col].equals(LetterResult.YELLOW)) {text.setStyle("-fx-background-color: #F1C40F; -fx-border-color: grey;-fx-text-fill:white;");}
-            text.setPrefWidth(50);
-            text.setPrefHeight(400);
-            text.setFont(Font.font("verdana", FontWeight.BOLD, 20 ));
-            text.setTextFormatter(new TextFormatter<>((change) -> {
-                change.setText(change.getText().toUpperCase());
-                return change;
-            }));
-            grid.add(text, col, row);
-            Insets insets = new Insets(0,2.5,2.5,2.5);
-            grid.setMargin(text,insets);
         }
         if (wordle.isWin()) {
             text.setText("Correct! You won!");
@@ -213,8 +203,8 @@ public class WordleController {
             wordle = new WordleImplementation();
             row = 0;
             col = 0;
-            initialize();
             resetGrid();
+            setEventHandler();
         } else {
             Platform.exit();
         }
@@ -226,7 +216,11 @@ public class WordleController {
                 TextField text = getTextField(col, row);
                 text.setText("");
                 text.setEditable(false);
+                text.setStyle("-fx-background-color: black; -fx-border-color: grey;-fx-text-fill:white;");
             }
         }
+        TextField text = getTextField(col, row);
+        text.setEditable(true);
+        requestFocus(text);
     }
 }
