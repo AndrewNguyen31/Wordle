@@ -10,19 +10,19 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+import java.util.Optional;
 
 public class WordleController {
-    private Wordle wordle = new WordleImplementation();
-    int row = 0;
-    int col = 0;
+    private Wordle wordle = new WordleImplementation();;
+    int row = 0, col = 0;
 
     LetterResult[] letterColors;
     @FXML
@@ -72,7 +72,9 @@ public class WordleController {
                 oldField.setEditable(false);
                 String word = getWord(row);
                 if (checkValidWord(word)) {
-                    colorRow(word);
+                    if(colorRow(word)) return;
+                    makeRowUneditable(row);
+
                     moveForward();
                 }
                 else {
@@ -136,26 +138,21 @@ public class WordleController {
     private void moveBackward() {
         if (col > 0) col--;
     }
-
-    private void colorRow(String guess) {
-        if(isWin(guess)){return;}
+    
+    private Boolean colorRow(String guess) {
         for (int col = 0; col < 5; col++) {
-            TextField text = new TextField();
+            TextField text = getTextField(col, row);
             text.setText(String.valueOf(guess.charAt(col)));
             if(letterColors[col].equals(LetterResult.GRAY)) {text.setStyle("-fx-background-color: dimgray; -fx-border-color: grey;-fx-text-fill:white;");}
             if(letterColors[col].equals(LetterResult.GREEN)) {text.setStyle("-fx-background-color: green; -fx-border-color: grey;-fx-text-fill:white;");}
             if(letterColors[col].equals(LetterResult.YELLOW)) {text.setStyle("-fx-background-color: #F1C40F; -fx-border-color: grey;-fx-text-fill:white;");}
-            text.setPrefWidth(50);
-            text.setPrefHeight(400);
-            text.setFont(Font.font("verdana", FontWeight.BOLD, 20 ));
-            text.setTextFormatter(new TextFormatter<>((change) -> {
-                change.setText(change.getText().toUpperCase());
-                return change;
-            }));
-            grid.add(text, col, row);
-            Insets insets = new Insets(0,2.5,2.5,2.5);
-            grid.setMargin(text,insets);
         }
+        if (!wordle.isGameOver()) return false;
+
+        if (wordle.isWin()) text.setText("Correct! You won!");
+        else if (wordle.isLoss()) text.setText("Incorrect. You are now out of guesses.");
+        playAgainAlert();
+        return true;
     }
 
     private boolean isWin(String word) {
@@ -188,4 +185,36 @@ public class WordleController {
         else {return false;}
     }
 
+
+    private void playAgainAlert(){
+
+        Alert alert = new Alert(Alert.AlertType.NONE,
+                "Play again?",
+                ButtonType.YES, ButtonType.NO);
+
+        Optional<ButtonType> YesNo = alert.showAndWait();
+        if (YesNo.get() == ButtonType.YES){
+            wordle = new WordleImplementation();
+            resetGrid();
+            row = 0;
+            col = 0;
+            text.setText("");
+        } else {
+            Platform.exit();
+        }
+    }
+
+    private void resetGrid() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 5; col++) {
+                TextField text = getTextField(col, row);
+                text.setText("");
+                text.setEditable(false);
+                text.setStyle("-fx-background-color: black; -fx-border-color: grey;-fx-text-fill:white;");
+            }
+        }
+        TextField text = getTextField(col, row);
+        text.setEditable(true);
+        requestFocus(text);
+    }
 }
