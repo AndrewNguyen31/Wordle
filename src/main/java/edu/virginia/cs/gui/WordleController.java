@@ -22,9 +22,8 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 public class WordleController {
-    private Wordle wordle = new WordleImplementation();
-    int row = 0;
-    int col = 0;
+    private Wordle wordle = new WordleImplementation();;
+    int row = 0, col = 0;
 
     LetterResult[] letterColors;
     @FXML
@@ -172,17 +171,12 @@ public class WordleController {
             if(letterColors[col].equals(LetterResult.GREEN)) {text.setStyle("-fx-background-color: green; -fx-border-color: grey;-fx-text-fill:white;");}
             if(letterColors[col].equals(LetterResult.YELLOW)) {text.setStyle("-fx-background-color: #F1C40F; -fx-border-color: grey;-fx-text-fill:white;");}
         }
-        if (wordle.isWin()) {
-            text.setText("Correct! You won!");
-            playAgainAlert();
-            return true;
-        }
-        else if (wordle.isLoss()) {
-            text.setText("Incorrect. You are now out of guesses.");
-            playAgainAlert();
-            return true;
-        }
-        return false;
+        if (!wordle.isGameOver()) return false;
+
+        if (wordle.isWin()) text.setText("Correct! You won!");
+        else if (wordle.isLoss()) text.setText("Incorrect. You are now out of guesses.");
+        playAgainAlert();
+        return true;
     }
 
     private void makeRowUneditable(int r){
@@ -201,10 +195,10 @@ public class WordleController {
         Optional<ButtonType> YesNo = alert.showAndWait();
         if (YesNo.get() == ButtonType.YES){
             wordle = new WordleImplementation();
+            resetGrid();
             row = 0;
             col = 0;
-            resetGrid();
-            setEventHandler();
+            text.setText("");
         } else {
             Platform.exit();
         }
