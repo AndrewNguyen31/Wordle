@@ -73,8 +73,6 @@ public class WordleController {
                 String word = getWord(row);
                 if (checkValidWord(word)) {
                     if(colorRow(word)) return;
-                    makeRowUneditable(row);
-
                     moveForward();
                 }
                 else {
