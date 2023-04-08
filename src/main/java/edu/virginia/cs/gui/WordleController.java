@@ -65,7 +65,7 @@ public class WordleController {
         grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(wordle.isGameOver()){return;}
+                if(wordle.isGameOver() || isInvalidKey(event)){return;}
                 text.setText("");
                 KeyCode code = event.getCode();
                 TextField oldField = getTextField(col, row);
@@ -110,6 +110,23 @@ public class WordleController {
             }
             return false;
         }
+    }
+
+    private boolean isInvalidKey(KeyEvent event){
+        switch(event.getCode()){
+            case LEFT:
+            case RIGHT:
+            case UP:
+            case DOWN:
+            case PAGE_UP:
+            case PAGE_DOWN:
+            case TAB:
+            case SHIFT:
+            case HOME:
+            case END:
+                return true;
+        }
+        return false;
     }
 
     private void requestFocus(TextField textField) {
@@ -193,10 +210,10 @@ public class WordleController {
         Optional<ButtonType> YesNo = alert.showAndWait();
         if (YesNo.get() == ButtonType.YES){
             wordle = new WordleImplementation();
-            resetGrid();
             row = 0;
             col = 0;
-            text.setText("");
+            resetGrid();
+            setEventHandler();
         } else {
             Platform.exit();
         }
