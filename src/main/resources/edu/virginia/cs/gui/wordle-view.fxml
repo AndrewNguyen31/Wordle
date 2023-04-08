@@ -14,5 +14,5 @@
 
     <GridPane fx:id="grid"/>
     <Label fx:id="text"/>
-    <Label fx:id="realText"/>
+    <Label fx:id="realText" text = "GAME OVER. Would you like to play again?" visible="false"/>
 </VBox>
