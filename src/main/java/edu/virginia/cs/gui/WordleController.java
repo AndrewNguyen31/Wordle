@@ -197,6 +197,9 @@ public class WordleController {
             row = 0;
             col = 0;
             text.setText("");
+            TextField t = getTextField(col, row);
+            t.setEditable(true);
+            requestFocus(t);
         } else {
             Platform.exit();
         }
