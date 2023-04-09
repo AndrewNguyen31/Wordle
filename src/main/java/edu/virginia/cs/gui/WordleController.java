@@ -62,7 +62,7 @@ public class WordleController {
     }
 
     private void setEventHandler(){
-        grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
+        grid.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if(wordle.isGameOver() || isInvalidKey(event)){return;}
@@ -70,13 +70,20 @@ public class WordleController {
                 KeyCode code = event.getCode();
                 TextField oldField = getTextField(col, row);
                 oldField.setEditable(false);
+            }
+        });
+
+        grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
                 String word = getWord(row);
-                if (checkValidWord(word)) {
+                System.out.println(col);
+                if (col == 4 && checkValidWord(word)) {
                     if(colorRow(word)) return;
                     moveForward();
                 }
                 else {
-                    if (code == KeyCode.BACK_SPACE) {
+                    if (event.getCode() == KeyCode.BACK_SPACE) {
                         moveBackward();
                     } else if (col < 4) {
                         moveForward();
@@ -214,6 +221,7 @@ public class WordleController {
             col = 0;
             resetGrid();
             setEventHandler();
+            text.setText("");
         } else {
             Platform.exit();
         }
