@@ -5,6 +5,8 @@ import edu.virginia.cs.wordle.LetterResult;
 import edu.virginia.cs.wordle.WordleImplementation;
 import edu.virginia.cs.wordle.Wordle;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -13,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -49,6 +52,15 @@ public class WordleController {
                     change.setText(change.getText().toUpperCase());
                     return change;
                 }));
+                text.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        if (text.getText().length() > 1){
+                            String str = text.getText().substring(0, 1);
+                            text.setText(str);
+                        }
+                    }
+                });
                 text.setEditable(false);
                 if (row == 0 && col == 0) {
                     text.setEditable(true);
@@ -62,7 +74,7 @@ public class WordleController {
     }
 
     private void setEventHandler(){
-        grid.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if(wordle.isGameOver() || isInvalidKey(event)){return;}
@@ -70,20 +82,13 @@ public class WordleController {
                 KeyCode code = event.getCode();
                 TextField oldField = getTextField(col, row);
                 oldField.setEditable(false);
-            }
-        });
-
-        grid.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
                 String word = getWord(row);
-                System.out.println(col);
-                if (col == 4 && checkValidWord(word)) {
-                    if(colorRow(word)) return;
+                if (checkValidWord(word)) {
+                    colorRow(word);
                     moveForward();
                 }
                 else {
-                    if (event.getCode() == KeyCode.BACK_SPACE) {
+                    if (code == KeyCode.BACK_SPACE) {
                         moveBackward();
                     } else if (col < 4) {
                         moveForward();
@@ -160,8 +165,8 @@ public class WordleController {
     private void moveBackward() {
         if (col > 0) col--;
     }
-    
-    private Boolean colorRow(String guess) {
+
+    private void colorRow(String guess) {
         for (int col = 0; col < 5; col++) {
             TextField text = getTextField(col, row);
             text.setText(String.valueOf(guess.charAt(col)));
@@ -169,12 +174,11 @@ public class WordleController {
             if(letterColors[col].equals(LetterResult.GREEN)) {text.setStyle("-fx-background-color: green; -fx-border-color: grey;-fx-text-fill:white;");}
             if(letterColors[col].equals(LetterResult.YELLOW)) {text.setStyle("-fx-background-color: #F1C40F; -fx-border-color: grey;-fx-text-fill:white;");}
         }
-        if (!wordle.isGameOver()) return false;
+        if (!wordle.isGameOver()) return;
 
         if (wordle.isWin()) text.setText("Correct! You won!");
         else if (wordle.isLoss()) text.setText("Incorrect. You are now out of guesses.");
         playAgainAlert();
-        return true;
     }
 
     private boolean isWin(String word) {
@@ -221,7 +225,6 @@ public class WordleController {
             col = 0;
             resetGrid();
             setEventHandler();
-            text.setText("");
         } else {
             Platform.exit();
         }
