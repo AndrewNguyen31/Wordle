@@ -136,6 +136,7 @@ public class WordleController {
             case SHIFT:
             case HOME:
             case END:
+            case CONTROL:
                 return true;
         }
         return false;
