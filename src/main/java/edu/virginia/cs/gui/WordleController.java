@@ -165,7 +165,9 @@ public class WordleController {
         }
         if (!wordle.isGameOver()) return false;
         if (wordle.isWin()) text.setText("Correct! You won!");
-        else if (wordle.isLoss()) text.setText("Incorrect. Out of guesses. Correct word: " + wordle.getAnswer());
+        else if (wordle.isLoss()){
+            text.setText("Out of guesses. Correct word: " + wordle.getAnswer());
+        }
         playAgainAlert();
         return true;
     }
