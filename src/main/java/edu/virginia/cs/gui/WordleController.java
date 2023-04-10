@@ -214,7 +214,6 @@ public class WordleController {
 
 
     private void playAgainAlert(){
-
         Alert alert = new Alert(Alert.AlertType.NONE,
                 "Play again?",
                 ButtonType.YES, ButtonType.NO);
@@ -222,10 +221,13 @@ public class WordleController {
         Optional<ButtonType> YesNo = alert.showAndWait();
         if (YesNo.get() == ButtonType.YES){
             wordle = new WordleImplementation();
+            resetGrid();
             row = 0;
             col = 0;
-            resetGrid();
-            setEventHandler();
+            text.setText("");
+            TextField t = getTextField(col, row);
+            t.setEditable(true);
+            requestFocus(t);
         } else {
             Platform.exit();
         }
